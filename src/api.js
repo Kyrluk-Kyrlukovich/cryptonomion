@@ -8,7 +8,7 @@ let conversionCurrency = 'USD';
 
 socket.addEventListener("message", e => {
     const {TYPE: type, FROMSYMBOL: currency, PRICE: newPrice, MESSAGE: message} = JSON.parse(e.data);
-    console.log(e);
+    //console.log(e);
     if(newPrice === undefined) {
         return;
     }

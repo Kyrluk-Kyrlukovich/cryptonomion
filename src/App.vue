@@ -204,7 +204,7 @@
           >
             <div class="px-4 py-5 sm:p-6 text-center">
               <dt class="text-sm font-medium text-gray-500 truncate">
-                {{ t.name }} - USD {{ t.valid }}
+                {{ t.name }} - USD
               </dt>
               <dd class="mt-1 text-3xl font-semibold text-gray-900">
                 {{ formatPrice(t.price) }}
@@ -296,6 +296,17 @@
 <script>
 import {subcribeToTickers, unsubcribeFromTicker} from "@/api";
 
+
+let worker = new SharedWorker('sharedWorker.js');
+
+    worker.port.start();
+
+    worker.port.addEventListener('message', message => {
+      console.log(message);
+    });
+
+    worker.port.postMessage(['askdjfkdsfjsljdfkjdsf']);
+ window.worker = worker;
 
 export default {
   name: "App",
@@ -401,8 +412,7 @@ export default {
             if(t == this.selectedTicker) {
               this.graph.push(price)
             }
-            console.log(this.conversionCurrency(price, this.btcPrice))
-            t.price = price;
+            t.price = this.conversionCurrency(price, this.btcPrice, tickerName);
             t.valid = true;
             tickerName === 'BTC' ? this.btcPrice = price : this.btcPrice;
           })
@@ -416,9 +426,11 @@ export default {
       return price > 1 ? Number(price).toFixed(2) : Number(price).toPrecision(2)
     },
 
-    conversionCurrency(currencyPriceInBtc, btcCurrency) {
-      console.log(currencyPriceInBtc, btcCurrency);
-      return currencyPriceInBtc / btcCurrency;
+    conversionCurrency(currencyPriceInBtc,  priceBtc, tickerName) {
+      if(tickerName === "BTC") {
+        return priceBtc;
+      }
+      return currencyPriceInBtc * priceBtc;
     },
 
     autoComplete() {
