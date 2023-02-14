@@ -291,28 +291,21 @@
       </section>
     </div>
   </div>
+  <input type="text" v-model="message">
+  <button @click="postMessage">check</button>
 </template>
 
 <script>
 import {subcribeToTickers, unsubcribeFromTicker} from "@/api";
-
-
-let worker = new SharedWorker('sharedWorker.js');
-
-    worker.port.start();
-
-    worker.port.addEventListener('message', message => {
-      console.log(message);
-    });
-
-    worker.port.postMessage(['askdjfkdsfjsljdfkjdsf']);
- window.worker = worker;
+import { sendMessage } from './worker_api.js';
 
 export default {
   name: "App",
 
   data() {
     return {
+      message:'',
+
       ticker: "",
       tickers: [],
 
@@ -402,6 +395,10 @@ export default {
   },
 
   methods: {
+    postMessage() {
+      sendMessage(this.message);
+    },
+
     updateTicker(tickerName, price, valid) {
       const filteredTickers = this.tickers.filter(t => t.name === tickerName)
       if(!valid) {
